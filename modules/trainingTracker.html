@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Training Tracker</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2rem;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1.5rem;
+    }
+    textarea, input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 0.25rem;
+    }
+    button {
+      margin-top: 2rem;
+      padding: 10px 20px;
+      font-weight: bold;
+      background: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Daily Training Tracker</h1>
+
+  <form id="trackerForm">
+    <label for="date">Date</label>
+    <input type="text" id="date" name="date" placeholder="June 27, 2025">
+
+    <label for="golf">Golf Training Summary</label>
+    <textarea id="golf" name="golf" rows="4" placeholder="What did you work on? How did it feel? Results?"></textarea>
+
+    <label for="gym">Gym / Mobility Work</label>
+    <textarea id="gym" name="gym" rows="4" placeholder="What did you lift, stretch, or recover with?"></textarea>
+
+    <label for="mental">Mental / Discipline Work</label>
+    <textarea id="mental" name="mental" rows="4" placeholder="Journaling, focus reps, self-discipline wins or slips?"></textarea>
+
+    <label for="score">Overall Daily Score (0–10)</label>
+    <input type="number" id="score" name="score" min="0" max="10" placeholder="7">
+
+    <button type="submit">Save Entry</button>
+  </form>
+
+  <script>
+  document.getElementById("trackerForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const date = document.getElementById("date").value;
+    const golf = document.getElementById("golf").value;
+    const gym = document.getElementById("gym").value;
+    const mental = document.getElementById("mental").value;
+    const score = document.getElementById("score").value;
+
+    const data = {
+      date, golf, gym, mental, score
+    };
+
+    fetch("https://script.google.com/macros/s/AKfycbyfDnS4yNaarTm2yBfMEl2mNFNOSAsbv4i7N1Tas7ST1498msiqLdEkl-wMlCxyuezImg/exec", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(res => res.text())
+    .then(response => {
+      alert("✅ Entry sent to Google Sheets!");
+      document.getElementById("trackerForm").reset();
+    })
+    .catch(err => {
+      alert("❌ Failed to send to Google Sheets.");
+      console.error(err);
+    });
+
+    const log = `
+=============================
+📅 ${date}
+🏌️‍♂️ Golf: ${golf}
+🏋️‍♂️ Gym: ${gym}
+🧠 Mental: ${mental}
+📊 Score: ${score}
+=============================
+`;
+
+    const logBox = document.getElementById("savedLogs");
+    logBox.textContent = log + "\n" + logBox.textContent;
+  });
+</script>
+<h2>📋 Saved Logs</h2>
+<pre id="savedLogs" style="white-space: pre-wrap; background: #f4f4f4; padding: 1rem;"></pre>
+</body>
+</html>
